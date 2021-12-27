@@ -90,3 +90,5 @@ Cmd: preprocessCompute
 
 Cmd: initializeCompiler
 
+Cmd: initializeCompiler
+

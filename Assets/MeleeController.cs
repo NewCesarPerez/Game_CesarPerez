@@ -21,6 +21,9 @@ public class MeleeController : MonoBehaviour
     {
         SwordOut();
         RunnigAttack();
+        SlashAttack();
+        KickAttack();
+        JumpSlashAttack();
     }
 
     void SwordOut()
@@ -53,27 +56,58 @@ public class MeleeController : MonoBehaviour
 
     void RunnigAttack()
     {
-        if (Input.GetKeyDown(KeyCode.I) && _runningAttack == 0)
+        if (Input.GetKeyDown(KeyCode.I))
         {
             Debug.Log("Ataque con salto");
             Debug.Log(_runningAttack);
 
-            animation.SetBool("Attack", true);
+            animation.SetTrigger("Attack");
             //animation.SetBool("Melee", true);
             _runningAttack = 1;
 
 
         }
 
-        else if (Input.GetKeyUp(KeyCode.I) && _runningAttack == 1)
+        
+    }
+
+    void SlashAttack()
+    {
+        if (Input.GetKeyDown(KeyCode.J))
         {
-            Debug.Log("Seteando de vuelta");
-           
-            animation.SetBool("Attack", true);
-            //animation.SetBool("Melee", false);
-            _runningAttack = 0;
+            Debug.Log("soft slash");
+            
+
+            animation.SetTrigger("Attack");
+            
+
 
         }
+
+
+    }
+    void KickAttack()
+    {
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            Debug.Log("Kick");
+
+
+            animation.SetTrigger("KickAttack");
+        }
+
+    }
+
+    void JumpSlashAttack()
+    {
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            Debug.Log("JumpSlash");
+
+
+            animation.SetTrigger("J&Slash");
+        }
+
     }
 
 }

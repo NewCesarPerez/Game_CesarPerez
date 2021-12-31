@@ -7,6 +7,9 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private float PlayerSpeed;
     [SerializeField] private float PlayerRotateSpeed;
+    [SerializeField] private Transform eyesTransform;
+    [SerializeField] private LayerMask layerToCollide;
+    [SerializeField] private float maxDistance;
     private Animator animator;
 
 
@@ -21,6 +24,7 @@ public class PlayerController : MonoBehaviour
     {
         MovePlayer();
         MoveWithoutSword();
+        RayCastPlayerEnemy();
     }
 
     void move(Vector3 dir)
@@ -65,4 +69,22 @@ public class PlayerController : MonoBehaviour
             PlayerRotateSpeed = 65f;
         }
     }
+
+    void RayCastPlayerEnemy()
+    {
+        RaycastHit hit;
+        Physics.Raycast(eyesTransform.position,transform.forward, out hit, maxDistance, layerToCollide );
+        if (hit.collider != null)
+        {
+            Debug.Log("En la mira");
+            animator.SetBool("Melee", true);
+        }
+
+        else
+        {
+            Debug.Log("No te veo");
+            
+        }
+    }
+
 }

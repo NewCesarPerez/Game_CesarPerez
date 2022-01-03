@@ -10,12 +10,19 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform eyesTransform;
     [SerializeField] private LayerMask layerToCollide;
     [SerializeField] private float maxDistance;
+    private float _maxTime;
+    private float _runningTime;
+    private float _CrouchTime;
     private Animator animator;
 
 
     // Start is called before the first frame update
     void Start()
     {
+
+        _maxTime = 4f;
+        _runningTime = _maxTime;
+        _CrouchTime = _maxTime;
         animator = GetComponent<Animator>();
     }
 
@@ -25,12 +32,9 @@ public class PlayerController : MonoBehaviour
         MovePlayer();
         MoveWithoutSword();
         RayCastPlayerEnemy();
+        Debug.Log("Tiempo corriendo " + _runningTime);
     }
 
-    void move(Vector3 dir)
-    {
-        
-    }
 
     private void MovePlayer()
     {
@@ -52,13 +56,33 @@ public class PlayerController : MonoBehaviour
 
     private void MoveWithoutSword()
     {
-        if (Input.GetKeyDown(KeyCode.LeftShift))
+        _runningTime -= Time.deltaTime;
+        _CrouchTime -= Time.deltaTime;
+
+        if (Input.GetKeyDown(KeyCode.Keypad0)&&_CrouchTime<=0)
         {
+            _CrouchTime = _maxTime;
+            animator.SetBool("Crouch", true);
+        }
+
+        else if (Input.GetKeyUp(KeyCode.Keypad0)){
+            animator.SetBool("Crouch", false);
+        }
+
+        Debug.Log("Tiempo corriendo " + _runningTime);
+        if (Input.GetKey(KeyCode.LeftShift) && _runningTime<=0)
+        {
+            
+            _runningTime =_maxTime;
+            Debug.Log("Tiempo corriendo " + _runningTime);
             Debug.Log("ApretandoShift");
             animator.SetBool("Run", true);
             animator.SetBool("RwS", true);
             PlayerSpeed = 6f;
             PlayerRotateSpeed = 100f;
+
+            
+
         }
 
         else if (Input.GetKeyUp(KeyCode.LeftShift))
@@ -67,7 +91,9 @@ public class PlayerController : MonoBehaviour
             animator.SetBool("RwS", false);
             PlayerSpeed = 1f;
             PlayerRotateSpeed = 65f;
+            
         }
+        
     }
 
     void RayCastPlayerEnemy()

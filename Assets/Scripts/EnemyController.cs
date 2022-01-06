@@ -5,7 +5,8 @@ using UnityEngine;
 public class EnemyController : MonoBehaviour
 {
     [SerializeField] private Transform target;
-    private float MinDistance = 3f;
+    private float MinDistance = 1.5f;
+    private float AttackAwareness = 3f;
     private float ChaseSpeed=2f;
     private float RotationTime=3f;
     private Animator enemyAnimator;
@@ -52,7 +53,7 @@ public class EnemyController : MonoBehaviour
         RaycastHit hit;
         Physics.Raycast(eyesTransform.position, transform.forward, out hit, maxDistance, layerToCollide);
         safeHit = hit.collider;
-        if (hit.collider != null)
+        if (safeHit != null)
         {
             
             Debug.Log("Player en la mira");
@@ -125,18 +126,34 @@ public class EnemyController : MonoBehaviour
 
             enemyAnimator.SetBool("EnemyOnSight", true);
             enemyAnimator.SetFloat("Velocity", 0f);
+            enemyAnimator.SetBool("AttackPlayer", true);
+
             sightLock = true;
             LookAtPlayer();
+
+           
         }
 
         else
         {
             enemyAnimator.SetBool("EnemyOnSight", false);
+            enemyAnimator.SetBool("AttackPlayer", false);
             sightLock = false;
             transform.LookAt(waypoints[waypointsIndex].position);
         }
 
+        //Ver pq no funciona
 
+        //if (distanceVector.magnitude <= AttackAwareness && safeHit == null && enemyAnimator.GetBool("EnemyOnSight")==true) 
+        //{
+        //    Debug.Log("Entrando al awareness");
+        //    enemyAnimator.SetFloat("Velocity", 1f);
+        //    transform.position += ChaseSpeed * Time.deltaTime * direction;
+        //    LookAtPlayer();
+        //}
     }
 
+    
 }
+
+

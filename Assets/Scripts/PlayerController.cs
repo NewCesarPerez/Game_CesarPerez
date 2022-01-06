@@ -21,8 +21,8 @@ public class PlayerController : MonoBehaviour
     {
 
         _maxTime = 4f;
-        _runningTime = _maxTime;
-        _CrouchTime = _maxTime;
+        _runningTime = 0;
+        _CrouchTime = 0;
         animator = GetComponent<Animator>();
     }
 
@@ -32,7 +32,7 @@ public class PlayerController : MonoBehaviour
         MovePlayer();
         MoveWithoutSword();
         RayCastPlayerEnemy();
-        Debug.Log("Tiempo corriendo " + _runningTime);
+        
     }
 
 
@@ -58,30 +58,61 @@ public class PlayerController : MonoBehaviour
     {
         _runningTime -= Time.deltaTime;
         _CrouchTime -= Time.deltaTime;
-
-        if (Input.GetKeyDown(KeyCode.Keypad0)&&_CrouchTime<=0)
+        //Metodo horrible para que el player solo se agache cada 4 segundos y por 4 segundos. INICIO
+        if (Input.GetKey(KeyCode.Keypad0) && _CrouchTime > 0)
         {
-            _CrouchTime = _maxTime;
+
+        }
+        if (Input.GetKey(KeyCode.Keypad0)&&_CrouchTime <= 0)
+        {
+            
             animator.SetBool("Crouch", true);
+            if (_CrouchTime <= -_maxTime)
+            {
+                _CrouchTime = 0;
+                animator.SetBool("Crouch", false);
+                _CrouchTime = _maxTime;
+            }
         }
 
         else if (Input.GetKeyUp(KeyCode.Keypad0)){
             animator.SetBool("Crouch", false);
+            if (_CrouchTime <= 0)
+            {
+                _CrouchTime = _maxTime;
+            }
         }
+        else if (_CrouchTime <= 0)
+        {
+            _CrouchTime = 0;
+        }
+        //Metodo horrible para que el player solo se agache cada 4 segundos y por 4 segundos. FIN
 
-        Debug.Log("Tiempo corriendo " + _runningTime);
+        //Metodo horrible para que el player solo corra cada 4 segundos y por 4 segundos. INICIO
+
+        if (Input.GetKey(KeyCode.LeftShift) && _runningTime > 0)
+        {
+
+        }
         if (Input.GetKey(KeyCode.LeftShift) && _runningTime<=0)
         {
             
-            _runningTime =_maxTime;
-            Debug.Log("Tiempo corriendo " + _runningTime);
-            Debug.Log("ApretandoShift");
+            //_runningTime =_maxTime;
+           
             animator.SetBool("Run", true);
             animator.SetBool("RwS", true);
             PlayerSpeed = 6f;
             PlayerRotateSpeed = 100f;
 
-            
+            if (_runningTime <= -_maxTime)
+            {
+                _runningTime = 0;
+                animator.SetBool("Run", false);
+                animator.SetBool("RwS", false);
+                PlayerSpeed = 1f;
+                PlayerRotateSpeed = 65f;
+                _runningTime = _maxTime;
+            }
 
         }
 
@@ -91,9 +122,17 @@ public class PlayerController : MonoBehaviour
             animator.SetBool("RwS", false);
             PlayerSpeed = 1f;
             PlayerRotateSpeed = 65f;
-            
+            if (_runningTime <= 0)
+            {
+                _runningTime = _maxTime;
+            }
         }
-        
+
+        else if (_runningTime <= 0)
+        {
+            _runningTime = 0;
+        }
+        //Metodo horrible para que el player solo corra cada 4 segundos y por 4 segundos. FIN
     }
 
     void RayCastPlayerEnemy()

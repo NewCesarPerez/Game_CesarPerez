@@ -6,11 +6,19 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
     private int _killingCount;
-    private int _playerLife;
+    private int _playerDeathCount;
+    private int _playerCurrentLife;
+    private Dictionary<string,int> counts=new Dictionary<string, int>()
+        {
+            {"KillingCount", instance.KillingCount },
+            {"PlayerDeathCount", instance._playerDeathCount},
+            {"PlayerCurrentLife", instance._playerCurrentLife},
+
+        }; 
     public bool dontDestroy;
     private void Awake()
     {
-        _playerLife = 100;
+        _playerCurrentLife = 100;
         _killingCount = 0;
         if (instance != null)
         {
@@ -30,9 +38,9 @@ public class GameManager : MonoBehaviour
 
     public void UpdatePlayerLife(int currentLife)
     {
-        _playerLife = currentLife;
+        _playerCurrentLife = currentLife;
     }
 
-    public int KillingCount => _killingCount;
-    public int PlayerLife => _playerLife;
+    public int KillingCount => counts["KillingCount"];
+    public int PlayerLife => counts["PlayerCurrentLife"];
 }

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -10,12 +11,13 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform eyesTransform;
     [SerializeField] private LayerMask layerToCollide;
     [SerializeField] private float maxDistance;
+    [SerializeField] private Image healthImage;
     private float _maxTime;
     private float _runningTime;
     private float _CrouchTime;
     private float timeToGetHit = 0.5f;
-    private int _maxLife = 100;
-    private int _currentLife;
+    private float _maxLife = 100f;
+    private float _currentLife;
     private Animator animator;
     private int contacto = 0;
 
@@ -171,6 +173,8 @@ public class PlayerController : MonoBehaviour
     {
         if (animator.GetBool("Death") == true && Input.GetKeyDown(KeyCode.KeypadPlus))
         {
+            Application.Quit();
+
             animator.SetBool("Death", false);
             animator.SetTrigger("Revival");
             _currentLife = _maxLife;
@@ -182,6 +186,8 @@ public class PlayerController : MonoBehaviour
         if (collision.gameObject.CompareTag("EnemySword")&&timeToGetHit<=0 &&animator.GetBool("Blocking")==false)
         {
             _currentLife -= 10;
+            var healthImagePorcentage = _currentLife / _maxLife;
+            healthImage.fillAmount = healthImagePorcentage;
 
             Debug.Log("Restando hp: " + _currentLife);
             animator.SetTrigger("Impacted");

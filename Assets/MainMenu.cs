@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -19,9 +20,11 @@ public class MainMenu : MonoBehaviour
 
     public void QuitGame()
     {
-        Debug.Log("Game is exiting");
-        Application.Quit();
-        Debug.Log("Game is exiting");
+
+#if UNITY_EDITOR
+        EditorApplication.isPlaying = false;
+#endif
+       
     }
 
     public void GoToCredits()

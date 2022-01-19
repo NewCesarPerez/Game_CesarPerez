@@ -2,28 +2,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyController : MonoBehaviour
+public class EnemyController : BaseEnemy
 {
-    [SerializeField] private Transform target;
     private float MinDistance = 1.5f;
     private float AttackAwareness = 3f;
-    private float ChaseSpeed=2f;
-    private float RotationTime=3f;
-    private Animator enemyAnimator;
-    private Collider safeHit;
     private int waypointsIndex;
     private float distance;
     private bool sightLock;
-    [SerializeField] private Transform eyesTransform;
-    [SerializeField] private LayerMask layerToCollide;
-    [SerializeField] private float maxDistance;
+    
     [SerializeField] private List<Transform> waypoints;
-    
 
-
-
-    
-
+    private void Awake()
+    {
+        ChaseSpeed = 2f;
+        RotationTime = 3f;
+    }
     // Start is called before the first frame update
     void Start()
     {
@@ -44,31 +37,6 @@ public class EnemyController : MonoBehaviour
         RayCastEnemyPlayer();
     }
 
-    public void LookAtPlayer()
-    {
-        Quaternion newRotation = Quaternion.LookRotation(target.position - transform.position);
-        transform.rotation = Quaternion.Slerp(transform.rotation, newRotation, RotationTime * Time.deltaTime);
-    }
-
-    void RayCastEnemyPlayer()
-    {
-        RaycastHit hit;
-        Physics.Raycast(eyesTransform.position, transform.forward, out hit, maxDistance, layerToCollide);
-        safeHit = hit.collider;
-        if (safeHit != null)
-        {
-            
-            Debug.Log("Player en la mira");
-            
-            
-        }
-
-        else
-        {
-            Debug.Log("No veo al player");
-
-        }
-    }
 
     public void Patrol()
     {
@@ -110,10 +78,6 @@ public class EnemyController : MonoBehaviour
         var distanceVector = target.position - transform.position;
         var direction = distanceVector.normalized;
 
-
-
-
-
         if (distanceVector.magnitude > MinDistance && safeHit != null)
             {
             sightLock = true;
@@ -132,7 +96,6 @@ public class EnemyController : MonoBehaviour
 
             sightLock = true;
             LookAtPlayer();
-
            
         }
 

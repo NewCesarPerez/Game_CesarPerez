@@ -20,11 +20,14 @@ public class PlayerController : MonoBehaviour
     private float _currentLife;
     private Animator animator;
     private int contacto = 0;
+    [SerializeField] private EnemyData enemyInfo;
+    
 
 
     // Start is called before the first frame update
     void Start()
     {
+       
         _currentLife = _maxLife;
         _maxTime = 4f;
         _runningTime = 0;
@@ -185,7 +188,11 @@ public class PlayerController : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("EnemySword")&&timeToGetHit<=0 &&animator.GetBool("Blocking")==false)
         {
-            _currentLife -= 10;
+
+            float enemyBaseDamge = collision.gameObject.GetComponent<EnemyStats>()._EnemyBaseDamage;
+
+            
+            _currentLife -= enemyBaseDamge;
             var healthImagePorcentage = _currentLife / _maxLife;
             healthImage.fillAmount = healthImagePorcentage;
 

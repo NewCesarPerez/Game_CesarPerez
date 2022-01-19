@@ -4,16 +4,27 @@ using UnityEngine;
 
 public class EnemyStats : MonoBehaviour
 {
-    private int _enemyLife;
+
+    [SerializeField]  EnemyData enemyInfo;
+
+    private float _enemyLife;
+
+    [System.NonSerialized]  public float _EnemyMaxHealth;
+    [System.NonSerialized] public float _EnemyBaseDamage;
+    [System.NonSerialized] public float _EnemyAttackAwareness;
+
     // Start is called before the first frame update
 
     private void Awake()
     {
-        _enemyLife = 30;
+        _EnemyMaxHealth = enemyInfo.maxHealth;
+        _EnemyBaseDamage = enemyInfo.baseDamage;
+        _EnemyAttackAwareness = enemyInfo.AttackAwareness;
     }
+    
     void Start()
     {
-
+        
     }
     
     // Update is called once per frame

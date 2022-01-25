@@ -7,6 +7,7 @@ TagManager:
   - Enemy
   - Sword
   - EnemySword
+  - Heart
   layers:
   - Default
   - TransparentFX
@@ -19,7 +20,7 @@ TagManager:
   - Walls
   - EnemySword
   - HeroSword
-  - 
+  - Hearts
   - 
   - 
   - 

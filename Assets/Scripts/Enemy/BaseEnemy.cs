@@ -36,11 +36,7 @@ public abstract class BaseEnemy : MonoBehaviour
 
         }
 
-        else
-        {
-            Debug.Log("No veo al player");
-
-        }
+      
     }
 
 

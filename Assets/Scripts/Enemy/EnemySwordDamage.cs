@@ -4,9 +4,15 @@ using UnityEngine;
 
 public class EnemySwordDamage : MonoBehaviour
 {
-
+    [SerializeField] EnemyData enemyInfo;
+    [System.NonSerialized] public float _EnemyBaseDamage;
     private Animator _playerAnimator;
     // Start is called before the first frame update
+
+    private void Awake()
+    {
+        _EnemyBaseDamage = enemyInfo.baseDamage;
+    }
     void Start()
     {
         

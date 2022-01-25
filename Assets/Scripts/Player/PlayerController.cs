@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Events;
+using System;
 
 public class PlayerController : MonoBehaviour
 {
@@ -12,16 +14,25 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private LayerMask layerToCollide;
     [SerializeField] private float maxDistance;
     [SerializeField] private Image healthImage;
+    [SerializeField] private EnemyData enemyInfo;
+    
     private float _maxTime;
     private float _runningTime;
     private float _CrouchTime;
     private float timeToGetHit = 0.5f;
     private float _maxLife = 100f;
     private float _currentLife;
+    private float _lowLife = 50f;
+    
+    public UnityEvent OnEmergencyHeart;
     private Animator animator;
     private int contacto = 0;
-    [SerializeField] private EnemyData enemyInfo;
-    
+
+    private void Awake()
+    {
+        
+
+    }
 
 
     // Start is called before the first frame update
@@ -41,10 +52,12 @@ public class PlayerController : MonoBehaviour
         timeToGetHit -= Time.deltaTime;
         MovePlayer();
         MoveWithoutSword();
+        PlayerLowLife();
         PlayerDeath();
         PlayerRevival();
+        TestingHearts();
         //RayCastPlayerEnemy();
-
+        
     }
 
 
@@ -98,36 +111,14 @@ public class PlayerController : MonoBehaviour
         {
             _CrouchTime = 0;
         }
-        //Metodo horrible para que el player solo se agache cada 4 segundos y por 4 segundos. FIN
-
-        //Metodo horrible para que el player solo corra cada 4 segundos y por 4 segundos. INICIO
-
-        if (Input.GetKey(KeyCode.LeftShift) && _runningTime > 0)
+       
+        if (Input.GetKey(KeyCode.LeftShift))
         {
-
-        }
-        if (Input.GetKey(KeyCode.LeftShift) && _runningTime<=0)
-        {
-            
-            //_runningTime =_maxTime;
-           
             animator.SetBool("Run", true);
             animator.SetBool("RwS", true);
             PlayerSpeed = 6f;
             PlayerRotateSpeed = 100f;
-
-            if (_runningTime <= -_maxTime)
-            {
-                _runningTime = 0;
-                animator.SetBool("Run", false);
-                animator.SetBool("RwS", false);
-                PlayerSpeed = 1f;
-                PlayerRotateSpeed = 65f;
-                _runningTime = _maxTime;
-            }
-
         }
-
         else if (Input.GetKeyUp(KeyCode.LeftShift))
         {
             animator.SetBool("Run", false);
@@ -139,11 +130,39 @@ public class PlayerController : MonoBehaviour
                 _runningTime = _maxTime;
             }
         }
+        //Metodo horrible para que el player solo se agache cada 4 segundos y por 4 segundos. FIN
 
-        else if (_runningTime <= 0)
-        {
-            _runningTime = 0;
-        }
+        //Metodo horrible para que el player solo corra cada 4 segundos y por 4 segundos. INICIO
+
+        //if (Input.GetKey(KeyCode.LeftShift) && _runningTime > 0)
+        //{
+
+        //}
+        //if (Input.GetKey(KeyCode.LeftShift) && _runningTime<=0)
+        //{
+
+        //    //_runningTime =_maxTime;
+
+        //    animator.SetBool("Run", true);
+        //    animator.SetBool("RwS", true);
+        //    PlayerSpeed = 6f;
+        //    PlayerRotateSpeed = 100f;
+
+        //    if (_runningTime <= -_maxTime)
+        //    {
+        //        _runningTime = 0;
+        //        animator.SetBool("Run", false);
+        //        animator.SetBool("RwS", false);
+        //        PlayerSpeed = 1f;
+        //        PlayerRotateSpeed = 65f;
+        //        _runningTime = _maxTime;
+        //    }
+
+        //}
+        //else if (_runningTime <= 0)
+        //{
+        //    _runningTime = 0;
+        //}
         //Metodo horrible para que el player solo corra cada 4 segundos y por 4 segundos. FIN
     }
 
@@ -164,6 +183,13 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    void PlayerLowLife()
+    {
+        if (_currentLife < _lowLife)
+        {
+            OnEmergencyHeart?.Invoke();
+        }
+    }
     void PlayerDeath()
     {
         if (_currentLife <= 0)
@@ -176,7 +202,7 @@ public class PlayerController : MonoBehaviour
     {
         if (animator.GetBool("Death") == true && Input.GetKeyDown(KeyCode.KeypadPlus))
         {
-            Application.Quit();
+            
 
             animator.SetBool("Death", false);
             animator.SetTrigger("Revival");
@@ -188,11 +214,12 @@ public class PlayerController : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("EnemySword")&&timeToGetHit<=0 &&animator.GetBool("Blocking")==false)
         {
-
-            float enemyBaseDamge = collision.gameObject.GetComponent<EnemyStats>()._EnemyBaseDamage;
-
             
-            _currentLife -= enemyBaseDamge;
+            
+            float enemyBaseDamage = collision.gameObject.GetComponent<EnemySwordDamage>()._EnemyBaseDamage; 
+            
+           
+            _currentLife -= enemyBaseDamage;
             var healthImagePorcentage = _currentLife / _maxLife;
             healthImage.fillAmount = healthImagePorcentage;
 
@@ -202,6 +229,32 @@ public class PlayerController : MonoBehaviour
         }
 
         
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+       
+        if (other.gameObject.CompareTag("Heart"))
+        {
+            
+            _currentLife = _maxLife;
+            var healthImagePorcentage = _currentLife / _maxLife;
+            healthImage.fillAmount = healthImagePorcentage;
+            Debug.Log("Entrando en el trigger: Vida " + _currentLife);
+
+
+        }
+    }
+
+    void TestingHearts()
+    {
+        if (Input.GetKeyDown(KeyCode.Backspace))
+        {
+            _currentLife = 40;
+            var healthImagePorcentage = _currentLife / _maxLife;
+            healthImage.fillAmount = healthImagePorcentage;
+            Debug.Log(_currentLife);
+        }
     }
 
 }

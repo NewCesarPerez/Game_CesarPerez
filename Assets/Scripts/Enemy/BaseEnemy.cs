@@ -39,5 +39,6 @@ public abstract class BaseEnemy : MonoBehaviour
       
     }
 
+    
 
 }

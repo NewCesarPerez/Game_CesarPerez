@@ -13,20 +13,25 @@ public class EnemyController : BaseEnemy
     private bool sightLock;
     [System.NonSerialized] public bool alertActivated = false;
     public event Action OnChase;
+  
 
     [SerializeField] private List<Transform> waypoints;
-
+   
     [SerializeField] private ChasePlayer[] enemies;
-    
+  
+
 
     private void Awake()
     {
+        
         ChaseSpeed = 2f;
         RotationTime = 3f;
 
         for (int i = 0; i < enemies.Length; i++)
         {
             OnChase += enemies[i].Chase;
+            
+
         }
     }
     // Start is called before the first frame update
@@ -48,6 +53,7 @@ public class EnemyController : BaseEnemy
         Patrol();
         Chase();
         RayCastEnemyPlayer();
+        
     }
 
 
@@ -147,7 +153,9 @@ public class EnemyController : BaseEnemy
         OnChase?.Invoke();
         alertActivated=true;
     }
-    //public UnityEvent OnChase;
+
+    
+    
 }
 
 

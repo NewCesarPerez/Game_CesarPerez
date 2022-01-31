@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 400000}
   - component: {fileID: 6500000}
-  m_Layer: 6
+  m_Layer: 10
   m_Name: Handle Collider
-  m_TagString: Untagged
+  m_TagString: Sword
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -54,9 +54,10 @@ GameObject:
   m_Component:
   - component: {fileID: 400002}
   - component: {fileID: 6500002}
-  m_Layer: 6
+  - component: {fileID: 1082578140}
+  m_Layer: 10
   m_Name: Blade Collider
-  m_TagString: Untagged
+  m_TagString: Sword
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -88,6 +89,18 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.11, y: 1.15, z: 0.05}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1082578140
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100002}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bb43a77e92a57c4d95e017c92eae1e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &100004
 GameObject:
   m_ObjectHideFlags: 0
@@ -98,9 +111,9 @@ GameObject:
   m_Component:
   - component: {fileID: 400004}
   - component: {fileID: 6400000}
-  m_Layer: 6
+  m_Layer: 10
   m_Name: Guard Collider
-  m_TagString: Untagged
+  m_TagString: Sword
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -128,7 +141,7 @@ MeshCollider:
   m_GameObject: {fileID: 100004}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 4
   m_Convex: 0
   m_CookingOptions: 30
@@ -144,7 +157,8 @@ GameObject:
   - component: {fileID: 400006}
   - component: {fileID: 3300000}
   - component: {fileID: 2300000}
-  m_Layer: 6
+  - component: {fileID: 853928635}
+  m_Layer: 10
   m_Name: Katana w_ Colliders
   m_TagString: Sword
   m_Icon: {fileID: 0}
@@ -217,3 +231,15 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &853928635
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100006}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bb43a77e92a57c4d95e017c92eae1e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

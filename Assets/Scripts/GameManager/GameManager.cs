@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviour
     private int _killingCount;
     private int _playerDeathCount;
     private int _playerCurrentLife;
+    [System.NonSerialized] public int _playerBaseDamage=30;
     private Dictionary<string,int> counts=new Dictionary<string, int>()
         {
             {"KillingCount", instance.KillingCount },
@@ -19,6 +20,7 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         _playerCurrentLife = 100;
+        _playerBaseDamage = 40;
         _killingCount = 0;
         if (instance != null)
         {

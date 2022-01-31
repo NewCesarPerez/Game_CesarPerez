@@ -4,10 +4,15 @@ using UnityEngine;
 
 public class EnemyStats : MonoBehaviour
 {
+   
 
     [SerializeField]  EnemyData enemyInfo;
 
+
     private float _enemyLife;
+    private int playerBaseDamage;
+    private float counterToDie;
+    private float timeToDie = 8;
 
     [System.NonSerialized]  public float _EnemyMaxHealth;
     [System.NonSerialized] public float _EnemyBaseDamage;
@@ -17,20 +22,26 @@ public class EnemyStats : MonoBehaviour
 
     private void Awake()
     {
+        //playerBaseDamage = GameManager.instance._playerBaseDamage;
+        playerBaseDamage = 25;
         _EnemyMaxHealth = enemyInfo.maxHealth;
         _EnemyAttackAwareness = enemyInfo.AttackAwareness;
+       
         animator = GetComponent<Animator>();
     }
     
     void Start()
     {
+        
         _enemyLife = _EnemyMaxHealth;
         Debug.Log("Vida del enemigo: "+_enemyLife);
+        counterToDie = timeToDie;
     }
     
     // Update is called once per frame
     void Update()
     {
+        EnemyDeath();
         //KillingCount();
     }
 
@@ -41,18 +52,25 @@ public class EnemyStats : MonoBehaviour
         if (collision.gameObject.CompareTag("Player"))
         {
             Debug.Log("Colision espada player 2");
+           
             animator.SetTrigger("Impacted");
-            _enemyLife -= 10;
-
+            _enemyLife -= playerBaseDamage ;
+            Debug.Log("Vida del enemigo: " + _enemyLife);
+            
         }
     }
 
-    private void KillingCount()
+    
+
+   private void EnemyDeath()
     {
-        if (_enemyLife == 0)
+        if (_enemyLife <= 0)
         {
-            GameManager.instance.AddKillingCount(1);
-            Destroy(gameObject);
+            counterToDie -= Time.deltaTime;
+            //GameManager.instance.AddKillingCount(1);
+            animator.SetBool("Death",true);
+            if(counterToDie<=0)
+                Destroy(gameObject);
         }
     }
 

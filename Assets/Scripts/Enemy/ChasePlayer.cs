@@ -108,7 +108,7 @@ public class ChasePlayer : BaseEnemy
         if (distanceVector.magnitude > MinDistance)
         {
             sightLock = true;
-            enemyAnimator.SetFloat("Velocity", 1f);
+            
             enemyAnimator.SetBool("EnemyOnSight", true);
 
             transform.position += ChaseSpeed * Time.deltaTime * direction;
@@ -118,16 +118,14 @@ public class ChasePlayer : BaseEnemy
         {
 
             enemyAnimator.SetBool("EnemyOnSight", true);
-            enemyAnimator.SetFloat("Velocity", 0f);
+            
             enemyAnimator.SetBool("AttackPlayer", true);
             sightLock = true;
             LookAtPlayer();
 
         }
 
-
-
-
+    
         //Ver pq no funciona
 
         //if (distanceVector.magnitude <= AttackAwareness && safeHit == null && enemyAnimator.GetBool("EnemyOnSight")==true) 
@@ -139,4 +137,5 @@ public class ChasePlayer : BaseEnemy
         //}
     }
 
+    
 }

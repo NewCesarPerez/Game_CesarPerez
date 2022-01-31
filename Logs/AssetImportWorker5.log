@@ -1,0 +1,21 @@
+Using pre-set license
+Built from '2020.3/release' branch; Version is '2020.3.15f2 (6cf78cb77498) revision 7141260'; Using compiler version '192528614'; Build Type 'Release'
+OS: 'Windows 10 Home Single Language; OS build 19042.1466; Version 2009; 64bit' Language: 'es' Physical Memory: 10153 MB
+BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1, IsPro: 0
+
+ COMMAND LINE ARGUMENTS:
+C:\Program Files\Unity\Editor\Unity.exe
+-adb2
+-batchMode
+-noUpm
+-name
+AssetImportWorker5
+-projectPath
+C:/Users/abogc/OneDrive/Desktop/CH_GameProject/Game_CesarPerez
+-logFile
+Logs/AssetImportWorker5.log
+-srvPort
+63276
+Successfully changed project path to: C:/Users/abogc/OneDrive/Desktop/CH_GameProject/Game_CesarPerez
+C:/Users/abogc/OneDrive/Desktop/CH_GameProject/Game_CesarPerez
+Using Asset Import Pipeline V2.

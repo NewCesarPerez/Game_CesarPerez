@@ -4,6 +4,28 @@ using UnityEngine;
 
 public class MeleeController : MonoBehaviour
 {
+
+    public enum ComboState
+    {
+        NONE,
+        SLASH_ATTACK,
+        SLIDE_ATTACK,
+        TWO_STRIKE,
+        KICK,
+       
+
+    }
+
+    private bool activateTimerToReset;
+    private float default_Combo_Timer = 0.4f;
+    private float current_Combo_Timer;
+    private ComboState currentComboState;
+    [SerializeField] private Transform SwordReference;
+    [SerializeField] private Transform SwordParentRun;
+    [SerializeField] private Transform SwordParentBlocking;
+
+
+    private Vector3 SwordPosition;
     private bool input;
     private Animator animation;
     private int Sword;
@@ -11,12 +33,17 @@ public class MeleeController : MonoBehaviour
     private float swordColliderTimer;
 
     [SerializeField] private GameObject swordCollider;
-    
-    
-    
+
+    private void Awake()
+    {
+        
+    }
     // Start is called before the first frame update
     void Start()
     {
+        current_Combo_Timer = default_Combo_Timer;
+        currentComboState = ComboState.NONE;
+        
         swordCollider.SetActive(false);
         swordColliderTimer = 1.5f;
         
@@ -30,14 +57,10 @@ public class MeleeController : MonoBehaviour
     {
         swordColliderTimer -= Time.deltaTime;
 
-        
-        SwordOut();
-        RunnigAttack();
-        KickTwo();
-        SlashThreeAttack();
-        KickThree();
-        KickAttack();
-        JumpSlashAttack();
+
+        ComboAttacks();
+        ResetComboState();
+
         Blocking();
     }
 
@@ -65,19 +88,13 @@ public class MeleeController : MonoBehaviour
 
     }
 
-    void RunnigAttack()
+    void TwoStrikes()
     {
-        if (Input.GetKeyDown(KeyCode.I)&&animation.GetBool("Melee")==true)
-        {
-
-
+        
             swordCollider.SetActive(true);
-            animation.SetTrigger("Attack");
-            //animation.SetBool("Melee", true);
-            _runningAttack = 1;
-
+            animation.SetTrigger("TwoStrikes");
             swordColliderTimer = 1.2f;
-        }
+        
 
         if (swordColliderTimer <= 0 && swordCollider == true)
         {
@@ -88,15 +105,14 @@ public class MeleeController : MonoBehaviour
     }
 
     
-    void SlashThreeAttack()
+    void SlashAttack()
     {
-        if (Input.GetKeyDown(KeyCode.J) && animation.GetBool("Melee") == true)
-        {
+        
             swordCollider.SetActive(true);
-            animation.SetTrigger("S3");
+            animation.SetTrigger("SlashAttack");
             swordColliderTimer = 1.5f;
 
-        }
+        
 
 
         if (swordColliderTimer <= 0 && swordCollider == true)
@@ -110,19 +126,17 @@ public class MeleeController : MonoBehaviour
     
     
 
-    void JumpSlashAttack()
+    void SlideAttack()
     {
-       
-        if (Input.GetKeyDown(KeyCode.L) && animation.GetBool("Melee") == true)
-        {
-           
+               
             swordCollider.SetActive(true);
             
-            animation.SetTrigger("J&Slash");
+            animation.SetTrigger("SlideAttack");
+        
             
             swordColliderTimer = 1.5f;
 
-        }
+        
        
 
         if (swordColliderTimer <= 0 && swordCollider == true)
@@ -137,40 +151,111 @@ public class MeleeController : MonoBehaviour
 
     void Blocking()
     {
+        float pos;
+        SwordPosition=new Vector3 (0.0962f,-0.0023f, -0.08050466f);
         if (Input.GetKeyDown(KeyCode.P))
         {
-            animation.SetBool("Blocking", true);
+            animation.SetBool("Block", true);
+
+            //SwordReference.SetParent(SwordParentBlocking);
         }
 
         else if (Input.GetKeyUp(KeyCode.P))
         {
-            animation.SetBool("Blocking", false);
+            animation.SetBool("Block", false);
+            //SwordReference.SetParent(SwordParentRun);
+            //SwordReference.transform.localPosition = SwordPosition;
+
         }
     }
 
-    void KickAttack()
+    void KickOne()
     {
-        if (Input.GetKeyDown(KeyCode.L) && animation.GetBool("Melee") == false)
-        {
+       
 
-
-
-            animation.SetTrigger("KickAttack");
-        }
+            animation.SetTrigger("Kick");
+        
 
     }
     void KickTwo()
     {
-        if (Input.GetKeyDown(KeyCode.J) && animation.GetBool("Melee") == false)
-        {
+       
             animation.SetTrigger("KickTwo");
-        }
+        
     }
     void KickThree()
     {
-        if (Input.GetKeyDown(KeyCode.I) && animation.GetBool("Melee") == false)
-        {
+       
             animation.SetTrigger("KickThree");
+        
+    }
+
+    void ComboAttacks()
+    {
+        if (currentComboState == ComboState.TWO_STRIKE)
+        {
+            return;
+        }
+        if (Input.GetKeyDown(KeyCode.J))
+        {
+            
+            currentComboState++;
+            activateTimerToReset = true;
+            current_Combo_Timer = default_Combo_Timer;
+            if (currentComboState == ComboState.SLASH_ATTACK)
+            {
+                SlashAttack();
+            }
+            if (currentComboState == ComboState.SLIDE_ATTACK)
+            {
+                SlideAttack();
+
+            }
+            if (currentComboState == ComboState.TWO_STRIKE)
+            {
+                TwoStrikes();
+            }
+            Debug.Log(currentComboState);
+        }
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            if (currentComboState == ComboState.TWO_STRIKE)
+            {
+                return;
+            }
+            if (currentComboState==ComboState.NONE|| currentComboState == ComboState.SLASH_ATTACK|| currentComboState == ComboState.SLIDE_ATTACK)
+            {
+                currentComboState = ComboState.KICK;
+                Debug.Log(currentComboState);
+            }
+
+            activateTimerToReset = true;
+            current_Combo_Timer = default_Combo_Timer;
+            if (currentComboState == ComboState.KICK)
+            {
+                KickTwo();
+            }
+            
+        }
+
+
+
+
+
+    }
+    void ResetComboState()
+    {
+        if (activateTimerToReset == true)
+        {
+            current_Combo_Timer -= Time.deltaTime;
+            if (current_Combo_Timer <= 0f)
+            {
+                currentComboState = ComboState.NONE;
+                activateTimerToReset = false;
+
+            }
+
         }
     }
+
 }

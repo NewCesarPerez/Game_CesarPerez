@@ -11,11 +11,12 @@ public class EnemySwordDamage : MonoBehaviour
 
     private void Awake()
     {
-        _EnemyBaseDamage = enemyInfo.baseDamage;
+        
     }
     void Start()
     {
-        
+        _EnemyBaseDamage = enemyInfo.baseDamage;
+        Debug.Log("SwordDamage: " + _EnemyBaseDamage);
     }
 
     // Update is called once per frame

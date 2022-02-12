@@ -12,7 +12,7 @@ public class EnemyStats : MonoBehaviour
     private float _enemyLife;
     private int playerBaseDamage;
     private float counterToDie;
-    private float timeToDie = 8;
+    private float timeToDie = 6;
 
     [System.NonSerialized]  public float _EnemyMaxHealth;
     [System.NonSerialized] public float _EnemyBaseDamage;

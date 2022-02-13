@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using System;
+using Random = UnityEngine.Random;
 
 public class EnemyController : BaseEnemy
 {
@@ -10,7 +11,13 @@ public class EnemyController : BaseEnemy
     private float AttackAwareness = 3f;
     private int waypointsIndex;
     private float distance;
+   [SerializeField] private float attackDistance=2f;
+    private float chasePlayerAfterAttack = 1f;
+    private float currentAttackTime;
+    private float defaultAttackTime = 2f;
+    private bool followPlayer, attackPlayer;
     private bool sightLock;
+    private Rigidbody EnemyBody;
     [System.NonSerialized] public bool alertActivated = false;
     public event Action OnChase;
   
@@ -26,6 +33,7 @@ public class EnemyController : BaseEnemy
         
         ChaseSpeed = 2f;
         RotationTime = 3f;
+        EnemyBody = GetComponent<Rigidbody>();
 
         for (int i = 0; i < enemies.Length; i++)
         {
@@ -42,20 +50,30 @@ public class EnemyController : BaseEnemy
         sightLock = false;
         transform.LookAt(waypoints[waypointsIndex].position);
         enemyAnimator=GetComponent<Animator>();
-        
+
+        //Apartir de aqui tutorial
+        //followPlayer = true;
+        currentAttackTime = defaultAttackTime;
     }
 
     // Update is called once per frame
     void Update()
     {
         
-        Range();
-        Patrol();
-        Chase();
-        RayCastEnemyPlayer();
+        AttackPlayer();
+        //Range();
+        //Patrol();
+        //Chase();
+        
         
     }
 
+    private void FixedUpdate()
+    {
+        //FollowTarget();
+        RayCastEnemyPlayer();
+
+    }
 
     public void Patrol()
     {
@@ -154,8 +172,112 @@ public class EnemyController : BaseEnemy
         alertActivated=true;
     }
 
+    //Enemy Animations: Tutorial
+
     
+    public void EnemyAttack(int attack)
+    {
+        if (attack == 0)
+        {
+            enemyAnimator.SetTrigger("Slash");
+        }
+
+        if (attack == 1)
+        {
+            enemyAnimator.SetTrigger("Inlash");
+        }
+
+        if (attack == 2)
+        {
+            enemyAnimator.SetTrigger("HvyAtt");
+        }
+    }
+
+    public void PlayIdleAnim()
+    {
+        enemyAnimator.Play("EnemyIdle");
+    }
+
+    public void Stunned()
+    {
+        enemyAnimator.SetTrigger("KnDown");
+    }
     
+    public void GetUp()
+    {
+        enemyAnimator.SetTrigger("GetUp");
+    }
+
+    public void Impacted()
+    {
+        enemyAnimator.SetTrigger("Impacted");
+
+    }
+    public void Death()
+    {
+        enemyAnimator.SetTrigger("Death");
+
+    }
+
+    protected override void RayCastEnemyPlayer()
+    {
+        RaycastHit hit;
+        Physics.Raycast(eyesTransform.position, transform.forward, out hit, maxDistance, layerToCollide);
+        safeHit = hit.collider;
+        
+        if (safeHit != null)
+        {
+
+            followPlayer = true;
+
+
+
+        }
+        FollowTarget();
+    }
+    
+void FollowTarget()
+    {
+        var distanceWithPlayer = Vector3.Distance(transform.position, target.position);
+        
+        if (!followPlayer) return;
+     
+        if (distanceWithPlayer > attackDistance)
+        {
+            transform.LookAt(target);
+            EnemyBody.velocity = transform.forward * ChaseSpeed;
+            enemyAnimator.SetFloat("Velocity", 1f);
+        
+        
+        }
+        else if (distanceWithPlayer <= attackDistance)
+        {
+           
+            EnemyBody.velocity = Vector3.zero;
+            enemyAnimator.SetFloat("Velocity", 0f);
+            followPlayer = false;
+            attackPlayer = true;
+        }
+
+    }
+
+    void AttackPlayer()
+    {
+        
+        if (!attackPlayer) return;
+        currentAttackTime += Time.deltaTime;
+        if (currentAttackTime > defaultAttackTime)
+        {
+            Debug.Log("Entrando al Attaque");
+            EnemyAttack(Random.Range(0,3));
+            currentAttackTime = 0f;
+        }
+        if(Vector3.Distance(transform.position, target.position) > attackDistance + chasePlayerAfterAttack)
+        {
+            attackPlayer = false;
+            followPlayer = true;
+        }
+    }
 }
 
 

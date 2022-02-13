@@ -88,15 +88,23 @@ public class PlayerController : MonoBehaviour
             animator.SetBool("WalkBack", false);
         }
 
+        if (h < 0 && v == 0)
+        {
+            animator.SetBool("TurnLeft", true);
+        }
+        else if ((h > 0 && v == 0))
+        {
+            animator.SetBool("TurnRight", true);
+        }
+        else { animator.SetBool("TurnRight", false); animator.SetBool("TurnLeft", false); }
     }
 
     private void Run()
     {
         
-        if (Input.GetKey(KeyCode.LeftShift)&&animator.GetBool("WalkBack")==false)
+        if (Input.GetKey(KeyCode.LeftShift)&&animator.GetBool("WalkBack")==false && animator.GetBool("TurnRight") == false && animator.GetBool("TurnLeft") == false)
         {
-            animator.SetBool("Run", true);
-            
+            animator.SetBool("Run", true);           
             PlayerSpeed = 6f;
             PlayerRotateSpeed = 100f;
         }
@@ -159,12 +167,13 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("EnemySword")&&timeToGetHit<=0 &&animator.GetBool("Block")==false)
+        
+        if (collision.gameObject.layer== 9 && timeToGetHit<=0 &&animator.GetBool("Block")==false)
         {
-            
+            Debug.Log("Player colisiona con el tag " + collision.gameObject.tag);
             
             float enemyBaseDamage = collision.gameObject.GetComponent<EnemySwordDamage>()._EnemyBaseDamage;
-            Debug.Log("Daño base enemigo " + enemyBaseDamage);
+            Debug.Log("Daño base enemigo ");
 
             _currentLife -= enemyBaseDamage;
             var healthImagePorcentage = _currentLife / _maxLife;

@@ -12,6 +12,7 @@ public class MeleeController : MonoBehaviour
         SLIDE_ATTACK,
         TWO_STRIKE,
         KICK,
+        KICK_TWO
        
 
     }
@@ -21,9 +22,6 @@ public class MeleeController : MonoBehaviour
     private float current_Combo_Timer;
     private ComboState currentComboState;
     [SerializeField] private Transform SwordReference;
-    [SerializeField] private Transform SwordParentRun;
-    [SerializeField] private Transform SwordParentBlocking;
-
 
     private Vector3 SwordPosition;
     private bool input;
@@ -227,15 +225,24 @@ public class MeleeController : MonoBehaviour
             {
                 currentComboState = ComboState.KICK;
                 Debug.Log(currentComboState);
+            }else if(currentComboState == ComboState.KICK)
+            {
+                currentComboState++;
             }
 
             activateTimerToReset = true;
             current_Combo_Timer = default_Combo_Timer;
             if (currentComboState == ComboState.KICK)
             {
-                KickTwo();
+                KickOne();
+                
             }
             
+            if (currentComboState == ComboState.KICK_TWO)
+            {
+                KickTwo();
+            }
+
         }
 
 

@@ -16,7 +16,7 @@ public class EnemySwordDamage : MonoBehaviour
     void Start()
     {
         _EnemyBaseDamage = enemyInfo.baseDamage;
-        Debug.Log("SwordDamage: " + _EnemyBaseDamage);
+        //Debug.Log("SwordDamage: " + _EnemyBaseDamage);
     }
 
     // Update is called once per frame

@@ -15,6 +15,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float maxDistance;
     [SerializeField] private Image healthImage;
     [SerializeField] private EnemyData enemyInfo;
+    [SerializeField] private GameObject blockingHitEffect;
     
     private float _maxTime;
     private float _runningTime;
@@ -167,10 +168,12 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        
-        if (collision.gameObject.layer== 9 && timeToGetHit<=0 &&animator.GetBool("Block")==false)
+        Debug.Log("Layer: "+collision.gameObject.layer);
+        Debug.Log("Tag: " + collision.gameObject.tag);
+
+        if (collision.gameObject.layer==LayerMask.NameToLayer("EnemySword") && timeToGetHit<=0 &&animator.GetBool("Block")==false)
         {
-            Debug.Log("Player colisiona con el tag " + collision.gameObject.tag);
+            Debug.Log("Player colisiona con la layer " + collision.gameObject.layer);
             
             float enemyBaseDamage = collision.gameObject.GetComponent<EnemySwordDamage>()._EnemyBaseDamage;
             Debug.Log("Daño base enemigo ");
@@ -187,7 +190,22 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        
+        if (collision.gameObject.layer == LayerMask.NameToLayer("EnemySword") && animator.GetBool("Block") == true)
+        {
+            Debug.Log("Bloqueo y chispas " + collision.gameObject.layer);
+            ContactPoint contact2 = collision.contacts[0];
+            Vector3 SparkPosition = contact2.point;
+            SparkPosition.y -= 0.5f;
+            SparkPosition.z += 0.3f;
+            Instantiate(blockingHitEffect, SparkPosition, Quaternion.identity);
+            var blockHit=FindObjectOfType<blockHit>();
+            Destroy(blockHit.gameObject, 0.5f);
+
+        }
+
+
+
+
     }
 
     private void OnTriggerEnter(Collider other)

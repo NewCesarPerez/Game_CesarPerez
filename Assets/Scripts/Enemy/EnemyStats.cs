@@ -34,7 +34,7 @@ public class EnemyStats : MonoBehaviour
     {
         
         _enemyLife = _EnemyMaxHealth;
-        Debug.Log("Vida del enemigo: "+_enemyLife);
+        //Debug.Log("Vida del enemigo: "+_enemyLife);
         counterToDie = timeToDie;
     }
     
@@ -47,9 +47,9 @@ public class EnemyStats : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        Debug.Log("Colision espada player");
+        
         Debug.Log(collision.gameObject.tag);
-        if (collision.gameObject.CompareTag("Player"))
+        if (collision.gameObject.layer == LayerMask.NameToLayer("HeroSword") )
         {
             Debug.Log("Colision espada player 2");
            
@@ -60,9 +60,21 @@ public class EnemyStats : MonoBehaviour
         }
     }
 
-    
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.layer == LayerMask.NameToLayer("HeroFoot"))
+        {
+            Debug.Log("Colision pie");
 
-   private void EnemyDeath()
+            animator.SetTrigger("Impacted");
+            _enemyLife -= playerBaseDamage;
+            Debug.Log("Vida del enemigo: " + _enemyLife);
+        }
+    }
+
+
+
+    private void EnemyDeath()
     {
         if (_enemyLife <= 0)
         {

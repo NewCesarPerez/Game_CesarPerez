@@ -142,7 +142,7 @@ public class PlayerController : MonoBehaviour
        
         if (_currentLife < _lowLife)
         {
-            Debug.Log("Etrando a Player low life");
+            
             OnEmergencyHeart?.Invoke();
         }
     }

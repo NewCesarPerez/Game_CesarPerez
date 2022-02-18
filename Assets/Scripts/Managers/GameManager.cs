@@ -5,6 +5,7 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
+    public bool chasePlayer;
     private int _killingCount;
     private int _playerDeathCount;
     private int _playerCurrentLife;
@@ -19,6 +20,7 @@ public class GameManager : MonoBehaviour
     public bool dontDestroy;
     private void Awake()
     {
+        chasePlayer = false;
         _playerCurrentLife = 100;
         _playerBaseDamage = 40;
         _killingCount = 0;

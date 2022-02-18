@@ -1,141 +1,192 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 using System;
 
 public class ChasePlayer : BaseEnemy
 {
     private float MinDistance = 1.5f;
     private float AttackAwareness = 3f;
-    private int waypointsIndex;
-    private float distance;
-    private bool sightLock;
-    
-    public event Action OnChase;
-    [SerializeField] private List<Transform> waypoints;
-    
 
+    private float distance;
+
+    private float chasePlayerAfterAttack = 1f;
+    private float currentAttackTime;
+    private float defaultAttackTime = 2f;
+    private bool followPlayer, attackPlayer;
+    private bool sightLock;
+    private Rigidbody EnemyBody;
+    [System.NonSerialized] public bool alertActivated = false;
+    public event Action OnChase;
+
+    [SerializeField] private float attackDistance = 2f;
+    [SerializeField] private ChasePlayer[] enemies;
+    
 
 
     private void Awake()
     {
+
         ChaseSpeed = 2f;
         RotationTime = 3f;
+        EnemyBody = GetComponent<Rigidbody>();
+
         
     }
     // Start is called before the first frame update
     void Start()
     {
-        enemyAnimator = GetComponent<Animator>();
-        enemyAnimator.SetBool("EnemyOnSight", false);
-        enemyAnimator.SetBool("AttackPlayer", false);
+        //InformEnemyWaypoints();
+
         sightLock = false;
+
+        enemyAnimator = GetComponent<Animator>();
+        followPlayer = true;
+
+        //Apartir de aqui tutorial
+        //followPlayer = true;
+        currentAttackTime = defaultAttackTime;
     }
 
     // Update is called once per frame
     void Update()
     {
-        RayCastEnemyPlayer();
-        Patrol();
-        Range();
-    }
-    public void Patrol()
-    {
-        var distanceVector = target.position - transform.position;
-        var direction = distanceVector.normalized;
-        if (sightLock == false && safeHit == null)
-        {
-            enemyAnimator.SetFloat("Velocity", 1f);
-            transform.Translate(Vector3.forward * ChaseSpeed * Time.deltaTime);
-            transform.LookAt(waypoints[waypointsIndex].position);
-        }
 
-        else if (distanceVector.magnitude > MinDistance && safeHit != null)
-        {
-            sightLock = true;
-            enemyAnimator.SetFloat("Velocity", 1f);
-            enemyAnimator.SetBool("EnemyOnSight", true);
-
-            transform.position += ChaseSpeed * Time.deltaTime * direction;
-            LookAtPlayer();
-        }
-        else if (distanceVector.magnitude <= MinDistance && safeHit != null)
-        {
-
-            enemyAnimator.SetBool("EnemyOnSight", true);
-            enemyAnimator.SetFloat("Velocity", 0f);
-            enemyAnimator.SetBool("AttackPlayer", true);
-
-            sightLock = true;
-            LookAtPlayer();
-
-        }
+        AttackPlayer();
         
+
+
     }
 
-    void IncreaseIndex()
+    private void FixedUpdate()
     {
-        waypointsIndex++;
-        
-        if (waypointsIndex >= waypoints.Count)
-        {
-            waypointsIndex = 0;
+        FollowTarget();
+    
 
+    }
+
+
+    
+
+    //Enemy Animations: Tutorial
+
+
+    public void EnemyAttack(int attack)
+    {
+        if (attack == 0)
+        {
+            enemyAnimator.SetTrigger("Slash");
         }
-        transform.LookAt(waypoints[waypointsIndex].position);
-    }
-    void Range()
-    {
 
-        if (sightLock == false)
+        if (attack == 1)
         {
-            distance = Vector3.Distance(transform.position, waypoints[waypointsIndex].position);
+            enemyAnimator.SetTrigger("Inlash");
+        }
 
-            if (distance < 1f)
+        if (attack == 2)
+        {
+            enemyAnimator.SetTrigger("HvyAtt");
+        }
+    }
+
+    public void PlayIdleAnim()
+    {
+        enemyAnimator.Play("EnemyIdle");
+    }
+
+    public void Stunned()
+    {
+        enemyAnimator.SetTrigger("KnDown");
+    }
+
+    public void GetUp()
+    {
+        enemyAnimator.SetTrigger("GetUp");
+    }
+
+    public void Impacted()
+    {
+        enemyAnimator.SetTrigger("Impacted");
+
+    }
+    public void Death()
+    {
+        enemyAnimator.SetTrigger("Death");
+
+    }
+
+    private Transform otherEntity;
+    public float MinimumDistance = 50.0f;
+    private Transform thisEntity;
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+        {
+            otherEntity = other.GetComponent<Transform>();
+            thisEntity = GetComponent<Transform>();
+
+            float currentDistance = Vector3.Distance(thisEntity.position, otherEntity.transform.position);
+
+            if (currentDistance < 4.0f)
             {
-
-                IncreaseIndex();
+                Vector3 dist = new Vector3(transform.position.x - otherEntity.transform.position.x, 0, 0);
+                transform.position += dist * Time.deltaTime;
             }
+
+
         }
-
     }
-
-    public void Chase()
+    void FollowTarget()
     {
-        var distanceVector = target.position - transform.position;
-        var direction = distanceVector.normalized;
 
-        if (distanceVector.magnitude > MinDistance)
+        var distanceWithPlayer = Vector3.Distance(transform.position, target.transform.position);
+
+        if (!followPlayer) return;
+
+        if (distanceWithPlayer > attackDistance)
         {
-            sightLock = true;
-            
-            enemyAnimator.SetBool("EnemyOnSight", true);
+            transform.LookAt(target.transform);
+            EnemyBody.velocity = transform.forward * ChaseSpeed;
+            enemyAnimator.SetFloat("Velocity", 1f);
 
-            transform.position += ChaseSpeed * Time.deltaTime * direction;
-            LookAtPlayer();
-        }
-        else if (distanceVector.magnitude <= MinDistance)
-        {
 
-            enemyAnimator.SetBool("EnemyOnSight", true);
-            
-            enemyAnimator.SetBool("AttackPlayer", true);
-            sightLock = true;
-            LookAtPlayer();
 
         }
+        else if (distanceWithPlayer <= attackDistance)
+        {
 
-    
-        //Ver pq no funciona
+            EnemyBody.velocity = Vector3.zero;
+            enemyAnimator.SetFloat("Velocity", 0f);
+            followPlayer = false;
+            attackPlayer = true;
+        }
 
-        //if (distanceVector.magnitude <= AttackAwareness && safeHit == null && enemyAnimator.GetBool("EnemyOnSight")==true) 
-        //{
-        //    Debug.Log("Entrando al awareness");
-        //    enemyAnimator.SetFloat("Velocity", 1f);
-        //    transform.position += ChaseSpeed * Time.deltaTime * direction;
-        //    LookAtPlayer();
-        //}
+
     }
 
-    
+    void AttackPlayer()
+    {
+
+        if (!attackPlayer) return;
+        currentAttackTime += Time.deltaTime;
+        if (currentAttackTime > defaultAttackTime)
+        {
+            Debug.Log("Entrando al Attaque");
+            EnemyAttack(Random.Range(0, 3));
+            currentAttackTime = 0f;
+        }
+        if (Vector3.Distance(transform.position, target.transform.position) > attackDistance + chasePlayerAfterAttack)
+        {
+            attackPlayer = false;
+            followPlayer = true;
+        }
+    }
+
+   
 }
+
+
+    
+

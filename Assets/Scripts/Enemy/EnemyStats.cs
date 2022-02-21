@@ -1,18 +1,23 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.Events;
+using UnityEngine.SceneManagement;
+using Random = UnityEngine.Random;
 
 public class EnemyStats : MonoBehaviour
 {
    
 
     [SerializeField]  EnemyData enemyInfo;
+    [SerializeField] private Image EnemyHealthImage;
 
-
+    private float counter;
     private float _enemyLife;
     private int playerBaseDamage;
     private float counterToDie;
-    private float timeToDie = 8;
+    private float timeToDie = 5;
 
     [System.NonSerialized]  public float _EnemyMaxHealth;
     [System.NonSerialized] public float _EnemyBaseDamage;
@@ -32,9 +37,9 @@ public class EnemyStats : MonoBehaviour
     
     void Start()
     {
-        
+         counter = 0.2f;
         _enemyLife = _EnemyMaxHealth;
-        Debug.Log("Vida del enemigo: "+_enemyLife);
+        //Debug.Log("Vida del enemigo: "+_enemyLife);
         counterToDie = timeToDie;
     }
     
@@ -45,34 +50,82 @@ public class EnemyStats : MonoBehaviour
         //KillingCount();
     }
 
-    private void OnCollisionEnter(Collision collision)
+    
+
+    private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Colision espada player");
-        Debug.Log(collision.gameObject.tag);
-        if (collision.gameObject.CompareTag("Player"))
+        if (other.gameObject.layer == LayerMask.NameToLayer("HeroFoot"))
         {
-            Debug.Log("Colision espada player 2");
-           
-            animator.SetTrigger("Impacted");
-            _enemyLife -= playerBaseDamage ;
-            Debug.Log("Vida del enemigo: " + _enemyLife);
+            Debug.Log("Colision pie");
+            if (SceneManager.GetActiveScene().name != "LevelThree")
+            {
+                Impacted(Random.Range(0, 5));
+            }
+
+            else if (SceneManager.GetActiveScene().name == "LevelThree")
+            {
+                Impacted(Random.Range(0, 10));
+            }
+                _enemyLife -= playerBaseDamage;
+            Debug.Log("Vida del enemigo pie: " + _enemyLife);
+        }
+
+        
+        if (other.gameObject.layer == LayerMask.NameToLayer("HeroSword"))
+        {
+            if (SceneManager.GetActiveScene().name != "LevelThree")
+            {
+                Impacted(Random.Range(0, 5));
+            }
+
+            else if (SceneManager.GetActiveScene().name == "LevelThree")
+            {
+                Impacted(Random.Range(0, 10));
+            }
+            _enemyLife -= playerBaseDamage;
+            var healthImagePorcentage = _enemyLife / _EnemyMaxHealth;
+            EnemyHealthImage.fillAmount = healthImagePorcentage;
             
+
         }
     }
 
-    
 
-   private void EnemyDeath()
+    public void Impacted(int number)
     {
+        if (number == 1) animator.SetTrigger("Impacted");
+
+        else if (number == 2) 
+        
+        {animator.SetTrigger("KnDown");
+         animator.SetTrigger("GetUp");
+
+
+        }
+
+    }
+    private void EnemyDeath()
+    {
+       
         if (_enemyLife <= 0)
         {
+            
             counterToDie -= Time.deltaTime;
-            //GameManager.instance.AddKillingCount(1);
-            animator.SetBool("Death",true);
+            GameManager.instance.AddKillingCount();
+            animator.SetBool("Death", true);
+           animator.SetTrigger("DeathTrigger");
+            
+           
+
+            
+            
             if(counterToDie<=0)
                 Destroy(gameObject);
         }
+        
+
     }
+    
 
     
 }

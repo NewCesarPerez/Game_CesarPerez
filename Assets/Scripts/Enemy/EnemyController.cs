@@ -3,22 +3,37 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using System;
+using UnityEngine.SceneManagement;
+using Random = UnityEngine.Random;
 
 public class EnemyController : BaseEnemy
 {
+   
     private float MinDistance = 1.5f;
     private float AttackAwareness = 3f;
-    private int waypointsIndex;
+    
     private float distance;
+   
+    private float chasePlayerAfterAttack = 1f;
+    private float currentAttackTime;
+    private float defaultAttackTime = 2f;
+    private bool followPlayer, attackPlayer;
     private bool sightLock;
+    private Rigidbody EnemyBody;
     [System.NonSerialized] public bool alertActivated = false;
     public event Action OnChase;
-  
-
-    [SerializeField] private List<Transform> waypoints;
    
+    [SerializeField] private float attackDistance = 2f;
     [SerializeField] private ChasePlayer[] enemies;
-  
+    [SerializeField] private GameObject FlameParticleSystem;
+    [SerializeField] private GameObject BattleMusic;
+    [SerializeField] private GameObject AmbientMusic;
+    [SerializeField] private GameObject FlameSFX;
+
+
+
+
+    public UnityEvent OnEnemiesInst;
 
 
     private void Awake()
@@ -26,136 +41,200 @@ public class EnemyController : BaseEnemy
         
         ChaseSpeed = 2f;
         RotationTime = 3f;
+        EnemyBody = GetComponent<Rigidbody>();
 
-        for (int i = 0; i < enemies.Length; i++)
-        {
-            OnChase += enemies[i].Chase;
-            
-
-        }
+      
     }
     // Start is called before the first frame update
     void Start()
     {
-        //InformEnemyWaypoints();
-        waypointsIndex = 0;
-        sightLock = false;
-        transform.LookAt(waypoints[waypointsIndex].position);
-        enemyAnimator=GetComponent<Animator>();
-        
+        AmbientMusic.SetActive(true);
+        if(SceneManager.GetActiveScene().name!="LevelThree")
+        BattleMusic.SetActive(false);
+
+        else if(SceneManager.GetActiveScene().name == "LevelThree")
+            BattleMusic.SetActive(true);
+        SpellAttackOff();
+        SpellSFXOff();
+
+
+        enemyAnimator =GetComponent<Animator>();
+
+        //Apartir de aqui tutorial
+        //followPlayer = true;
+        currentAttackTime = defaultAttackTime;
     }
 
     // Update is called once per frame
     void Update()
     {
         
-        Range();
-        Patrol();
-        Chase();
+        AttackPlayer();
+       
+        
+        
+    }
+
+    private void FixedUpdate()
+    {
+        //FollowTarget();
         RayCastEnemyPlayer();
-        
+
     }
 
+    
 
-    public void Patrol()
+    
+
+    
+    public void EnemyAttack(int attack)
     {
-        if (sightLock == false)
+        if (attack == 0)
         {
+            enemyAnimator.SetTrigger("Slash");
+        }
+
+        if (attack == 1)
+        {
+            enemyAnimator.SetTrigger("Inlash");
+        }
+
+        if (attack == 2)
+        {
+            enemyAnimator.SetTrigger("HvyAtt");
+        }
+
+        if (attack == 3) 
+        {
+            enemyAnimator.SetTrigger("Spell");
+
+        }
+    }
+
+    public void PlayIdleAnim()
+    {
+        enemyAnimator.Play("EnemyIdle");
+    }
+
+    public void Stunned()
+    {
+        enemyAnimator.SetTrigger("KnDown");
+    }
+    
+    public void GetUp()
+    {
+        enemyAnimator.SetTrigger("GetUp");
+    }
+
+   
+    public void Death()
+    {
+        enemyAnimator.SetTrigger("Death");
+
+    }
+
+    protected override void RayCastEnemyPlayer()
+    {
+        RaycastHit hit;
+        Physics.Raycast(eyesTransform.position, transform.forward, out hit, maxDistance, layerToCollide);
+        safeHit = hit.collider;
+        
+        if (safeHit != null &&followPlayer==false)
+        {
+            AmbientMusic.SetActive(false);
+            BattleMusic.SetActive(true);
+            followPlayer = true;
+            OnEnemiesInst?.Invoke();
+          
+        }
+
+        if (SceneManager.GetActiveScene().name == "LevelThree")
+        {
+            followPlayer = true;
+        }
+        
+
+        FollowTarget();
+    }
+    
+void FollowTarget()
+    {
+        
+        var distanceWithPlayer = Vector3.Distance(transform.position, target.transform.position);
+        
+        if (!followPlayer) return;
+     
+        if (distanceWithPlayer > attackDistance)
+        {
+            transform.LookAt(target.transform);
+            EnemyBody.velocity = transform.forward * ChaseSpeed;
             enemyAnimator.SetFloat("Velocity", 1f);
-            transform.Translate(Vector3.forward * ChaseSpeed * Time.deltaTime);
-        }
-    }
-
-    void IncreaseIndex()
-    {
-        waypointsIndex++;
-        
-        if (waypointsIndex >=waypoints.Count)
-        {
-            waypointsIndex = 0;
-
-        }
-        transform.LookAt(waypoints[waypointsIndex].position);
-    }
-    void Range()
-    {
-        
-        if (sightLock == false) {
-            distance = Vector3.Distance(transform.position, waypoints[waypointsIndex].position);
             
-            if (distance < 1f )
-            {
-                
-                IncreaseIndex();
-            }
+
+
+        }
+        else if (distanceWithPlayer <= attackDistance)
+        {
+           
+            EnemyBody.velocity = Vector3.zero;
+            enemyAnimator.SetFloat("Velocity", 0f);
+            followPlayer = false;
+            attackPlayer = true;
         }
 
     }
 
-    public void Chase()
+    void AttackPlayer()
     {
         
-        var distanceVector = target.position - transform.position;
-        var direction = distanceVector.normalized;
-
-        if (distanceVector.magnitude > MinDistance && safeHit != null)
+        if (!attackPlayer) return;
+        currentAttackTime += Time.deltaTime;
+        if (currentAttackTime > defaultAttackTime)
+        {
+           
+            if (SceneManager.GetActiveScene().name != "LevelThree")
             {
-            sightLock = true;
-                enemyAnimator.SetFloat("Velocity", 1f);
-                enemyAnimator.SetBool("EnemyOnSight", true);
-
-                transform.position += ChaseSpeed * Time.deltaTime * direction;
-                LookAtPlayer();
-            Alert();
+            EnemyAttack(Random.Range(0,3));
             }
-        else if (distanceVector.magnitude <= MinDistance && safeHit != null)
+
+            else if (SceneManager.GetActiveScene().name == "LevelThree")
             {
-
-            enemyAnimator.SetBool("EnemyOnSight", true);
-            enemyAnimator.SetFloat("Velocity", 0f);
-            enemyAnimator.SetBool("AttackPlayer", true);
-
-            sightLock = true;
-            LookAtPlayer();
-            Alert();
-
+                EnemyAttack(Random.Range(0, 4));
+            }
+            currentAttackTime = 0f;
         }
-
-        else
+        if(Vector3.Distance(transform.position, target.transform.position) > attackDistance + chasePlayerAfterAttack)
         {
-            enemyAnimator.SetBool("EnemyOnSight", false);
-            enemyAnimator.SetBool("AttackPlayer", false);
-            sightLock = false;
-            transform.LookAt(waypoints[waypointsIndex].position);
-        }
-
-        //Ver pq no funciona
-
-        //if (distanceVector.magnitude <= AttackAwareness && safeHit == null && enemyAnimator.GetBool("EnemyOnSight")==true) 
-        //{
-        //    Debug.Log("Entrando al awareness");
-        //    enemyAnimator.SetFloat("Velocity", 1f);
-        //    transform.position += ChaseSpeed * Time.deltaTime * direction;
-        //    LookAtPlayer();
-        //}
-    }
-
-    public void InformEnemyWaypoints()
-    {
-       for (int i=0; i < waypoints.Count; i++)
-        {
-            Debug.Log("Punto de patrullaje N° " + i + ": " + waypoints[i].position);
+            attackPlayer = false;
+            followPlayer = true;
         }
     }
-    
-    public void Alert()
+
+    void SpellAttackOn()
     {
-        OnChase?.Invoke();
-        alertActivated=true;
+        if(SceneManager.GetActiveScene().name=="LevelThree")
+        FlameParticleSystem.SetActive(true);
+       
+        
     }
 
-    
-    
+    void SpellAttackOff()
+    {
+        if (SceneManager.GetActiveScene().name == "LevelThree")
+            FlameParticleSystem.SetActive(false);
+    }
+
+    void SpellSFXOn()
+    {
+        if (SceneManager.GetActiveScene().name=="LevelThree")
+        FlameSFX.SetActive(true);
+    }
+
+    void SpellSFXOff()
+    {
+        if (SceneManager.GetActiveScene().name == "LevelThree")
+            FlameSFX.SetActive(false);
+    }
 }
 
 

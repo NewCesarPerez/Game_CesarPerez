@@ -19,5 +19,9 @@ public class WinLevel : MonoBehaviour
             bridgeCollider.GetComponent<Collider>().isTrigger = true;
 
         }
+
+        
     }
+
+    
 }

@@ -16,14 +16,22 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Image healthImage;
     [SerializeField] private EnemyData enemyInfo;
     [SerializeField] private GameObject blockingHitEffect;
-    
+    [SerializeField] private GameObject swordBlockSFX;
+
     private float _maxTime;
     private float _runningTime;
     
-    private float timeToGetHit = 0.5f;
-    private float _maxLife = 100f;
+    private float timeToGetHit = 0.4f;
+    private float timeToGetBurn = 1f;
+    private float setTimerToActivateBlockSFX = 0.3f;
+    private float setTimerToDeActivateBlockSFX = 0.3f;
+    private float timeToDeActivateBlockSFX;
+    private float timeToActivateBlockSFX;
+
+
+    private float _maxLife = 200f;
     private float _currentLife;
-    private float _lowLife = 50f;
+    private float _lowLife;
     
     public UnityEvent OnEmergencyHeart;
     private Animator animator;
@@ -31,8 +39,10 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
-        
 
+        swordBlockSFX.SetActive(false);
+        timeToDeActivateBlockSFX = setTimerToDeActivateBlockSFX;
+        timeToActivateBlockSFX = setTimerToActivateBlockSFX;
     }
 
 
@@ -41,8 +51,10 @@ public class PlayerController : MonoBehaviour
     {
        
         _currentLife = _maxLife;
+        _lowLife = _maxLife / 2;
         _maxTime = 4f;
         _runningTime = 0;
+
         
         animator = GetComponent<Animator>();
     }
@@ -51,7 +63,13 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         timeToGetHit -= Time.deltaTime;
+        timeToGetBurn -= Time.deltaTime;
+        timeToDeActivateBlockSFX -= Time.deltaTime;
+        timeToActivateBlockSFX -= Time.deltaTime;
+
+        
         MovePlayer();
+        DeActivateBlockSFX();
         Run();
         PlayerLowLife();
         PlayerDeath();
@@ -61,7 +79,10 @@ public class PlayerController : MonoBehaviour
         
     }
 
-
+    public float GetCurrentLife()
+    {
+        return _currentLife;
+    }
     private void MovePlayer()
     {
         Vector3 dir;
@@ -168,15 +189,15 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        Debug.Log("Layer: "+collision.gameObject.layer);
-        Debug.Log("Tag: " + collision.gameObject.tag);
 
+        
         if (collision.gameObject.layer==LayerMask.NameToLayer("EnemySword") && timeToGetHit<=0 &&animator.GetBool("Block")==false)
         {
             Debug.Log("Player colisiona con la layer " + collision.gameObject.layer);
             
             float enemyBaseDamage = collision.gameObject.GetComponent<EnemySwordDamage>()._EnemyBaseDamage;
-            Debug.Log("Daño base enemigo ");
+
+           
 
             _currentLife -= enemyBaseDamage;
             var healthImagePorcentage = _currentLife / _maxLife;
@@ -190,8 +211,29 @@ public class PlayerController : MonoBehaviour
             }
         }
 
+
         if (collision.gameObject.layer == LayerMask.NameToLayer("EnemySword") && animator.GetBool("Block") == true)
         {
+            
+            
+            if (timeToActivateBlockSFX <= 0) {
+                Debug.Log("Entrando al activador");
+                swordBlockSFX.SetActive(true);
+                timeToActivateBlockSFX = setTimerToActivateBlockSFX;
+                timeToDeActivateBlockSFX = setTimerToDeActivateBlockSFX;
+                
+               
+                
+            }
+
+            //if (timeToDeActivateBlockSFX <= 0)
+            //{
+            //    swordBlockSFX.SetActive(false);
+            //    timeToDeActivateBlockSFX = setTimerToDeActivateBlockSFX;
+            //}
+
+            
+            //timeToDeActivateBlockSFX = setTimerToDeActivateBlockSFX;
             Debug.Log("Bloqueo y chispas " + collision.gameObject.layer);
             ContactPoint contact2 = collision.contacts[0];
             Vector3 SparkPosition = contact2.point;
@@ -200,10 +242,44 @@ public class PlayerController : MonoBehaviour
             Instantiate(blockingHitEffect, SparkPosition, Quaternion.identity);
             var blockHit=FindObjectOfType<blockHit>();
             Destroy(blockHit.gameObject, 0.5f);
+       
+        }
+        //swordBlockSFX.SetActive(false);
 
+
+
+
+
+    }
+
+    private void OnParticleCollision(GameObject other)
+    {
+        if (other.gameObject.layer == LayerMask.NameToLayer("EnemyFlame") && timeToGetBurn <= 0 && animator.GetBool("Block") == false)
+        { 
+           
+        
+            Debug.Log("Player colisiona con la layer " + other.gameObject.layer);
+            Debug.Log("Quemado");
+
+            float enemyBaseDamage = 60;
+
+            _currentLife -= enemyBaseDamage;
+            var healthImagePorcentage = _currentLife / _maxLife;
+            healthImage.fillAmount = healthImagePorcentage;
+
+            Debug.Log("Restando hp: " + _currentLife);
+            
+                animator.SetTrigger("Impacted");
+                timeToGetBurn = 1f;
+            
         }
 
+        if (other.gameObject.layer == LayerMask.NameToLayer("EnemyFlame") && animator.GetBool("Block") == true)
+        {
+            Debug.Log("Bloqueo LLamas " + other.gameObject.layer);
 
+
+        }
 
 
     }
@@ -223,6 +299,16 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    void DeActivateBlockSFX()
+    {
+        if (timeToDeActivateBlockSFX <= 0)
+        {
+            swordBlockSFX.SetActive(false);
+            timeToDeActivateBlockSFX = setTimerToDeActivateBlockSFX;
+        }
+    }
+
+    
     void TestingHearts()
     {
         if (Input.GetKeyDown(KeyCode.Backspace))

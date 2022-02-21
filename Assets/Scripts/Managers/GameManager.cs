@@ -9,14 +9,9 @@ public class GameManager : MonoBehaviour
     private int _killingCount;
     private int _playerDeathCount;
     private int _playerCurrentLife;
+    private int killingToCount;
     [System.NonSerialized] public int _playerBaseDamage=30;
-    private Dictionary<string,int> counts=new Dictionary<string, int>()
-        {
-            {"KillingCount", instance.KillingCount },
-            {"PlayerDeathCount", instance._playerDeathCount},
-            {"PlayerCurrentLife", instance._playerCurrentLife},
-
-        }; 
+    
     public bool dontDestroy;
     private void Awake()
     {
@@ -35,8 +30,9 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void AddKillingCount(int killingToCount)
+    public void AddKillingCount()
     {
+        killingToCount++;
         _killingCount += killingToCount;
     }
 
@@ -45,6 +41,8 @@ public class GameManager : MonoBehaviour
         _playerCurrentLife = currentLife;
     }
 
-    public int KillingCount => counts["KillingCount"];
-    public int PlayerLife => counts["PlayerCurrentLife"];
+    public int GetKillingCount()
+    {
+      return  _killingCount;
+    }
 }

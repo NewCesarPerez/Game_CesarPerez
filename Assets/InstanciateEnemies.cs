@@ -35,7 +35,6 @@ public class InstanciateEnemies : MonoBehaviour
     public void InstEnemies()
     {
 
-        Debug.Log("Entrando a inst enemies");
         
         if (allowInst == true)
         {

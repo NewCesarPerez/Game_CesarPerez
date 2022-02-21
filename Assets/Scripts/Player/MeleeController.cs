@@ -31,10 +31,16 @@ public class MeleeController : MonoBehaviour
     private float swordColliderTimer;
 
     [SerializeField] private GameObject swordCollider;
+    [SerializeField] private GameObject swordSlashSFX;
+    private float timeToDeActivateSlashSFX;
+    private float setTimerToDeActivateSlashSFX=0.5f;
 
     private void Awake()
     {
+        swordSlashSFX.SetActive(false);
+        timeToDeActivateSlashSFX = setTimerToDeActivateSlashSFX;
         
+
     }
     // Start is called before the first frame update
     void Start()
@@ -54,11 +60,11 @@ public class MeleeController : MonoBehaviour
     void Update()
     {
         swordColliderTimer -= Time.deltaTime;
-
-
+        
+        timeToDeActivateSlashSFX -= Time.deltaTime;
         ComboAttacks();
         ResetComboState();
-
+        
         Blocking();
     }
 
@@ -155,14 +161,13 @@ public class MeleeController : MonoBehaviour
         {
             animation.SetBool("Block", true);
 
-            //SwordReference.SetParent(SwordParentBlocking);
+            
         }
 
         else if (Input.GetKeyUp(KeyCode.P))
         {
             animation.SetBool("Block", false);
-            //SwordReference.SetParent(SwordParentRun);
-            //SwordReference.transform.localPosition = SwordPosition;
+            
 
         }
     }
@@ -196,7 +201,7 @@ public class MeleeController : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.J))
         {
-            
+           
             currentComboState++;
             activateTimerToReset = true;
             current_Combo_Timer = default_Combo_Timer;
@@ -213,9 +218,13 @@ public class MeleeController : MonoBehaviour
             {
                 TwoStrikes();
             }
-            Debug.Log(currentComboState);
+            
         }
-        if (Input.GetKeyDown(KeyCode.K))
+
+        
+
+
+            if (Input.GetKeyDown(KeyCode.K))
         {
             if (currentComboState == ComboState.TWO_STRIKE)
             {
@@ -249,6 +258,19 @@ public class MeleeController : MonoBehaviour
 
 
 
+    }
+
+    void DeActivateSlashSFX()
+    {
+        
+            swordSlashSFX.SetActive(false);
+            
+        
+    }
+
+    void ActivateSlashSFX()
+    {
+        swordSlashSFX.SetActive(true);
     }
     void ResetComboState()
     {

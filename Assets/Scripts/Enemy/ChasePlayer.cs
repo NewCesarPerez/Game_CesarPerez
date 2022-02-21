@@ -21,8 +21,9 @@ public class ChasePlayer : BaseEnemy
     public event Action OnChase;
 
     [SerializeField] private float attackDistance = 2f;
-    [SerializeField] private ChasePlayer[] enemies;
     
+
+
 
 
     private void Awake()
@@ -44,9 +45,10 @@ public class ChasePlayer : BaseEnemy
         enemyAnimator = GetComponent<Animator>();
         followPlayer = true;
 
-        //Apartir de aqui tutorial
+        
         //followPlayer = true;
         currentAttackTime = defaultAttackTime;
+        
     }
 
     // Update is called once per frame
@@ -128,16 +130,19 @@ public class ChasePlayer : BaseEnemy
             thisEntity = GetComponent<Transform>();
 
             float currentDistance = Vector3.Distance(thisEntity.position, otherEntity.transform.position);
-
+            
             if (currentDistance < 4.0f)
             {
+                
                 Vector3 dist = new Vector3(transform.position.x - otherEntity.transform.position.x, 0, 0);
-                transform.position += dist * Time.deltaTime;
+                
+                transform.position += dist*1.5f * Time.deltaTime;
             }
 
 
         }
     }
+    
     void FollowTarget()
     {
 
@@ -150,13 +155,13 @@ public class ChasePlayer : BaseEnemy
             transform.LookAt(target.transform);
             EnemyBody.velocity = transform.forward * ChaseSpeed;
             enemyAnimator.SetFloat("Velocity", 1f);
-
+            
 
 
         }
         else if (distanceWithPlayer <= attackDistance)
         {
-
+           
             EnemyBody.velocity = Vector3.zero;
             enemyAnimator.SetFloat("Velocity", 0f);
             followPlayer = false;

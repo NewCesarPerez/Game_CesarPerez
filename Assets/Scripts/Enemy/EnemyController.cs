@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using System;
+using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
 public class EnemyController : BaseEnemy
@@ -24,6 +25,14 @@ public class EnemyController : BaseEnemy
    
     [SerializeField] private float attackDistance = 2f;
     [SerializeField] private ChasePlayer[] enemies;
+    [SerializeField] private GameObject FlameParticleSystem;
+    [SerializeField] private GameObject BattleMusic;
+    [SerializeField] private GameObject AmbientMusic;
+    [SerializeField] private GameObject FlameSFX;
+
+
+
+
     public UnityEvent OnEnemiesInst;
 
 
@@ -34,21 +43,22 @@ public class EnemyController : BaseEnemy
         RotationTime = 3f;
         EnemyBody = GetComponent<Rigidbody>();
 
-        //for (int i = 0; i < enemies.Length; i++)
-        //{
-        //    OnChase += enemies[i].Chase;
-            
-
-        //}
+      
     }
     // Start is called before the first frame update
     void Start()
     {
-        //InformEnemyWaypoints();
-        
-        sightLock = false;
-        
-        enemyAnimator=GetComponent<Animator>();
+        AmbientMusic.SetActive(true);
+        if(SceneManager.GetActiveScene().name!="LevelThree")
+        BattleMusic.SetActive(false);
+
+        else if(SceneManager.GetActiveScene().name == "LevelThree")
+            BattleMusic.SetActive(true);
+        SpellAttackOff();
+        SpellSFXOff();
+
+
+        enemyAnimator =GetComponent<Animator>();
 
         //Apartir de aqui tutorial
         //followPlayer = true;
@@ -60,9 +70,7 @@ public class EnemyController : BaseEnemy
     {
         
         AttackPlayer();
-        //Range();
-        //Patrol();
-        //Chase();
+       
         
         
     }
@@ -74,104 +82,9 @@ public class EnemyController : BaseEnemy
 
     }
 
-    public void Patrol()
-    {
-        if (sightLock == false)
-        {
-            enemyAnimator.SetFloat("Velocity", 1f);
-            transform.Translate(Vector3.forward * ChaseSpeed * Time.deltaTime);
-        }
-    }
-
-    //void IncreaseIndex()
-    //{
-    //    waypointsIndex++;
-        
-    //    if (waypointsIndex >=waypoints.Count)
-    //    {
-    //        waypointsIndex = 0;
-
-    //    }
-    //    transform.LookAt(waypoints[waypointsIndex].position);
-    //}
-    //void Range()
-    //{
-        
-    //    if (sightLock == false) {
-    //        distance = Vector3.Distance(transform.position, waypoints[waypointsIndex].position);
-            
-    //        if (distance < 1f )
-    //        {
-                
-    //            IncreaseIndex();
-    //        }
-    //    }
-
-    //}
-
-    //public void Chase()
-    //{
-        
-    //    var distanceVector = target.position - transform.position;
-    //    var direction = distanceVector.normalized;
-
-    //    if (distanceVector.magnitude > MinDistance && safeHit != null)
-    //        {
-    //        sightLock = true;
-    //            enemyAnimator.SetFloat("Velocity", 1f);
-    //            enemyAnimator.SetBool("EnemyOnSight", true);
-
-    //            transform.position += ChaseSpeed * Time.deltaTime * direction;
-    //            LookAtPlayer();
-    //        Alert();
-    //        }
-    //    else if (distanceVector.magnitude <= MinDistance && safeHit != null)
-    //        {
-
-    //        enemyAnimator.SetBool("EnemyOnSight", true);
-    //        enemyAnimator.SetFloat("Velocity", 0f);
-    //        enemyAnimator.SetBool("AttackPlayer", true);
-
-    //        sightLock = true;
-    //        LookAtPlayer();
-    //        Alert();
-
-    //    }
-
-    //    else
-    //    {
-    //        enemyAnimator.SetBool("EnemyOnSight", false);
-    //        enemyAnimator.SetBool("AttackPlayer", false);
-    //        sightLock = false;
-    //        transform.LookAt(waypoints[waypointsIndex].position);
-    //    }
-
-    //    //Ver pq no funciona
-
-    //    //if (distanceVector.magnitude <= AttackAwareness && safeHit == null && enemyAnimator.GetBool("EnemyOnSight")==true) 
-    //    //{
-    //    //    Debug.Log("Entrando al awareness");
-    //    //    enemyAnimator.SetFloat("Velocity", 1f);
-    //    //    transform.position += ChaseSpeed * Time.deltaTime * direction;
-    //    //    LookAtPlayer();
-    //    //}
-    //}
-
-    //public void InformEnemyWaypoints()
-    //{
-    //   for (int i=0; i < waypoints.Count; i++)
-    //    {
-    //        Debug.Log("Punto de patrullaje N° " + i + ": " + waypoints[i].position);
-    //    }
-    //}
     
-    public void Alert()
-    {
-        OnChase?.Invoke();
-        alertActivated=true;
-    }
 
-    //Enemy Animations: Tutorial
+    
 
     
     public void EnemyAttack(int attack)
@@ -190,6 +103,12 @@ public class EnemyController : BaseEnemy
         {
             enemyAnimator.SetTrigger("HvyAtt");
         }
+
+        if (attack == 3) 
+        {
+            enemyAnimator.SetTrigger("Spell");
+
+        }
     }
 
     public void PlayIdleAnim()
@@ -207,11 +126,7 @@ public class EnemyController : BaseEnemy
         enemyAnimator.SetTrigger("GetUp");
     }
 
-    public void Impacted()
-    {
-        enemyAnimator.SetTrigger("Impacted");
-
-    }
+   
     public void Death()
     {
         enemyAnimator.SetTrigger("Death");
@@ -226,12 +141,17 @@ public class EnemyController : BaseEnemy
         
         if (safeHit != null &&followPlayer==false)
         {
-
+            AmbientMusic.SetActive(false);
+            BattleMusic.SetActive(true);
             followPlayer = true;
             OnEnemiesInst?.Invoke();
           
         }
 
+        if (SceneManager.GetActiveScene().name == "LevelThree")
+        {
+            followPlayer = true;
+        }
         
 
         FollowTarget();
@@ -271,8 +191,16 @@ void FollowTarget()
         currentAttackTime += Time.deltaTime;
         if (currentAttackTime > defaultAttackTime)
         {
-            Debug.Log("Entrando al Attaque");
+           
+            if (SceneManager.GetActiveScene().name != "LevelThree")
+            {
             EnemyAttack(Random.Range(0,3));
+            }
+
+            else if (SceneManager.GetActiveScene().name == "LevelThree")
+            {
+                EnemyAttack(Random.Range(0, 4));
+            }
             currentAttackTime = 0f;
         }
         if(Vector3.Distance(transform.position, target.transform.position) > attackDistance + chasePlayerAfterAttack)
@@ -280,6 +208,32 @@ void FollowTarget()
             attackPlayer = false;
             followPlayer = true;
         }
+    }
+
+    void SpellAttackOn()
+    {
+        if(SceneManager.GetActiveScene().name=="LevelThree")
+        FlameParticleSystem.SetActive(true);
+       
+        
+    }
+
+    void SpellAttackOff()
+    {
+        if (SceneManager.GetActiveScene().name == "LevelThree")
+            FlameParticleSystem.SetActive(false);
+    }
+
+    void SpellSFXOn()
+    {
+        if (SceneManager.GetActiveScene().name=="LevelThree")
+        FlameSFX.SetActive(true);
+    }
+
+    void SpellSFXOff()
+    {
+        if (SceneManager.GetActiveScene().name == "LevelThree")
+            FlameSFX.SetActive(false);
     }
 }
 

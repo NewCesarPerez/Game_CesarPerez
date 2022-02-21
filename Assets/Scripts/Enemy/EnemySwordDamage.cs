@@ -16,7 +16,7 @@ public class EnemySwordDamage : MonoBehaviour
     void Start()
     {
         _EnemyBaseDamage = enemyInfo.baseDamage;
-        Debug.Log("SwordDamage: " + _EnemyBaseDamage);
+        //Debug.Log("SwordDamage: " + _EnemyBaseDamage);
     }
 
     // Update is called once per frame
@@ -25,14 +25,5 @@ public class EnemySwordDamage : MonoBehaviour
         
     }
 
-    //public void OnTriggerEnter(Collider other)
-    //{
-    //    Debug.Log("Espada Impactando");
-    //    if (other.gameObject.CompareTag("Player"))
-    //    {
-    //        Debug.Log("Espada Impactando");
-    //        _playerAnimator = other.gameObject.GetComponent<Animator>();
-    //        _playerAnimator.SetTrigger("Impacted");
-    //    }
-    //}
+    
 }

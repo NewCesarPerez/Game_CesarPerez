@@ -13,7 +13,7 @@ public class PlayerStats : MonoBehaviour
         _playerLife = 100;
         _killingCount = 0;
         GameManager.instance.UpdatePlayerLife(_playerLife);
-        GameManager.instance.AddKillingCount(_killingCount);
+        GameManager.instance.AddKillingCount();
     }
     void Start()
     {

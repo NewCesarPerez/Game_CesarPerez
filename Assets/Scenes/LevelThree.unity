@@ -2621,6 +2621,10 @@ PrefabInstance:
       propertyPath: EnemyHealthImage
       value: 
       objectReference: {fileID: 268497814}
+    - target: {fileID: 4927095106879179326, guid: 2a08d709cbddb9841ad9a761c2e3bb21, type: 3}
+      propertyPath: m_Avatar
+      value: 
+      objectReference: {fileID: 9000000, guid: d77e7e91972267c42b770d76d3eb79e4, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2a08d709cbddb9841ad9a761c2e3bb21, type: 3}
 --- !u!1001 &5082786017893943536

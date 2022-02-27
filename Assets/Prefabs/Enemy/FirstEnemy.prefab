@@ -166,10 +166,10 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_Sprite: {fileID: 21300000, guid: 47358bed8f89bd947a41100f7cf5aab0, type: 3}
-  m_Type: 0
+  m_Type: 3
   m_PreserveAspect: 0
   m_FillCenter: 1
-  m_FillMethod: 4
+  m_FillMethod: 0
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
@@ -1113,6 +1113,10 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  FlameParticleSystem: {fileID: 0}
+  BattleMusic: {fileID: 0}
+  AmbientMusic: {fileID: 0}
+  FlameSFX: {fileID: 0}
   OnEnemiesInst:
     m_PersistentCalls:
       m_Calls:
@@ -1141,6 +1145,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyInfo: {fileID: 11400000, guid: fb5178f80e9109f4d8b4398a516c9b4e, type: 2}
+  EnemyHealthImage: {fileID: 788877001}
+  EnemyColliderOne: {fileID: 2847282594445512454}
+  EnemyColliderTwo: {fileID: 993122655}
+  EnemyController: {fileID: 0}
+  HitText: {fileID: 0}
 --- !u!54 &890273429
 Rigidbody:
   m_ObjectHideFlags: 0

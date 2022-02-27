@@ -2052,7 +2052,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyInfo: {fileID: 11400000, guid: 641fb6c5c7faf18439c502b4dd0c972c, type: 2}
-  EnemyHealthImage: {fileID: 0}
+  EnemyHealthImage: {fileID: 4413357253158204132}
+  EnemyColliderOne: {fileID: 1071405864}
+  EnemyColliderTwo: {fileID: 1071405865}
+  EnemyController: {fileID: 0}
 --- !u!114 &7593106408317694709
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2073,6 +2076,10 @@ MonoBehaviour:
   maxDistance: 40
   attackDistance: 1.5
   enemies: []
+  FlameParticleSystem: {fileID: 0}
+  BattleMusic: {fileID: 0}
+  AmbientMusic: {fileID: 0}
+  FlameSFX: {fileID: 0}
   OnEnemiesInst:
     m_PersistentCalls:
       m_Calls: []

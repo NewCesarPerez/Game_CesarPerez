@@ -80309,15 +80309,15 @@ AnimationClip:
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
-  - time: 1.3666667
-    functionName: SpellSFXOff
+  - time: 1.1333333
+    functionName: SpellAttackOff
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
-  - time: 1.4333333
-    functionName: SpellAttackOff
+  - time: 1.3666667
+    functionName: SpellSFXOff
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0

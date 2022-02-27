@@ -21,7 +21,7 @@ public class PlayerController : MonoBehaviour
     private float _maxTime;
     private float _runningTime;
     
-    private float timeToGetHit = 0.4f;
+    private float timeToGetHit = 0.6f;
     private float timeToGetBurn = 1f;
     private float setTimerToActivateBlockSFX = 0.3f;
     private float setTimerToDeActivateBlockSFX = 0.3f;
@@ -75,6 +75,7 @@ public class PlayerController : MonoBehaviour
         PlayerDeath();
         PlayerRevival();
         TestingHearts();
+        Debug.Log(GameManager.instance.GetPlayerDeathCount());
         //RayCastPlayerEnemy();
         
     }
@@ -193,7 +194,7 @@ public class PlayerController : MonoBehaviour
         
         if (collision.gameObject.layer==LayerMask.NameToLayer("EnemySword") && timeToGetHit<=0 &&animator.GetBool("Block")==false)
         {
-            Debug.Log("Player colisiona con la layer " + collision.gameObject.layer);
+            
             
             float enemyBaseDamage = collision.gameObject.GetComponent<EnemySwordDamage>()._EnemyBaseDamage;
 
@@ -207,7 +208,7 @@ public class PlayerController : MonoBehaviour
             if (animator.GetBool("Death") == false)
             {
                 animator.SetTrigger("Impacted");
-                timeToGetHit = 1f;
+                timeToGetHit = 0.6f;
             }
         }
 
@@ -252,9 +253,14 @@ public class PlayerController : MonoBehaviour
 
     }
 
+    public void PlayerDeathCount()
+    {
+        GameManager.instance.AddPlayerDeathCount();
+    }
+
     private void OnParticleCollision(GameObject other)
     {
-        if (other.gameObject.layer == LayerMask.NameToLayer("EnemyFlame") && timeToGetBurn <= 0 && animator.GetBool("Block") == false)
+        if (other.gameObject.layer == LayerMask.NameToLayer("EnemyFlame") && timeToGetBurn <= 0 && animator.GetBool("Block") == false&&_currentLife>0)
         { 
            
         

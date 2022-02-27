@@ -17,9 +17,9 @@ public class EnemyController : BaseEnemy
     private float chasePlayerAfterAttack = 1f;
     private float currentAttackTime;
     private float defaultAttackTime = 2f;
-    private bool followPlayer, attackPlayer;
+    [System.NonSerialized] public bool followPlayer, attackPlayer;
     private bool sightLock;
-    private Rigidbody EnemyBody;
+    [System.NonSerialized] public Rigidbody EnemyBody;
     [System.NonSerialized] public bool alertActivated = false;
     public event Action OnChase;
    
@@ -63,6 +63,7 @@ public class EnemyController : BaseEnemy
         //Apartir de aqui tutorial
         //followPlayer = true;
         currentAttackTime = defaultAttackTime;
+       
     }
 
     // Update is called once per frame

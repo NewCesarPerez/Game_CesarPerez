@@ -41,7 +41,7 @@ public class InstanciateEnemies : MonoBehaviour
             for (int i = 0; i < activateEnemies.Length; i++)
 
             {
-                Debug.Log("Entrando a activate enemies");
+                
 
                 allowInst = false;
 

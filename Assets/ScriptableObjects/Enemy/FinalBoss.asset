@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e28fab4fe4107e4bace01a6b715f45f, type: 3}
   m_Name: FinalBoss
   m_EditorClassIdentifier: 
-  maxHealth: 600
+  maxHealth: 800
   AttackAwareness: 3
   baseDamage: 40
